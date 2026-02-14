@@ -47,18 +47,27 @@
 
     const sessionId = getOrCreateSessionId();
 
-    function submitName() {
+    async function submitName() {
         const name = document.getElementById('answer').value.trim();
         if (!name) return alert('Veuillez entrer votre nom!');
 
-        fetch(`${API_BASE}/name`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, sessionId })
-        })
-        .then(res => { if (!res.ok) throw new Error('Erreur serveur: ' + res.status); return res.json(); })
-        .then(() => { window.location.href = '/'; })
-        .catch(err => { console.error(err); alert('Erreur lors de l'envoi. Détail: ' + err.message); });
+        try {
+            const res = await fetch(`${API_BASE}/name`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, sessionId })
+            });
+            if (!res.ok) {
+                let msg = res.statusText;
+                try { const j = await res.json(); if (j?.error) msg = j.error; } catch(e){}
+                throw new Error(msg || ('HTTP ' + res.status));
+            }
+            // explicit navigation to index.html (avoids root rewrite)
+            window.location.href = '/index.html';
+        } catch (err) {
+            console.error('submitName error', err);
+            alert('Erreur lors de l'envoi. Détail: ' + (err.message || err));
+        }
     }
 </script>
 </body>
