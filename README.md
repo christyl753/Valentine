@@ -3,19 +3,10 @@
 Ce dépôt contient une petite appli frontend + API serverless pour Vercel.
 
 Prérequis
-- Un compte GitHub
-- Un compte Vercel
-- Une base PostgreSQL (ex : Supabase, ElephantSQL) avec l'URL `DATABASE_URL`
 
 Fichiers importants
-- `api/` : fonctions serverless (name, answer, all, user-data)
-- `.env.example` : exemple des variables d'environnement
-- `migrate.sql` : script SQL minimal pour créer les tables
 
 Sécurité des secrets
-- NE COMMITEZ JAMAIS votre `.env` contenant `DATABASE_URL`.
-- `.env` est listé dans `.gitignore`.
-- Si vous avez accidentellement commité `.env, exécutez :
 
 ```powershell
 git rm --cached .env
@@ -57,9 +48,26 @@ psql <DATABASE_URL> -f migrate.sql
 5. Vercel déploiera automatiquement. Testez l'URL fournie.
 
 Support & suggestions
-- Si vous voulez, je peux :
   - initialiser le repo Git localement et pousser (j'aurai besoin d'autorisation/infos),
   - exécuter la migration si vous me fournissez l'accès à la DB (non recommandé),
   - ou guider pas à pas pendant que vous exécutez les commandes.
-# projet-perso-pour-s-amuser
-Quelques projets personnelles que je fais pour m'amuser.
+# Valentine — déploiement bref
+
+App statique + fonctions serverless pour Vercel.
+
+Prérequis
+- Compte GitHub, compte Vercel, base Postgres (Neon).
+
+Étapes rapides
+- Ne committez pas `.env`. Utilisez `DATABASE_URL` en variable d'environnement sur Vercel.
+- Initialiser, commit et push vers GitHub.
+- Importer le repo dans Vercel et ajouter `DATABASE_URL` (Preview & Production).
+- Appliquer `migrate.sql` sur la DB (psql ou éditeur SQL Neon).
+
+Fichiers utiles
+- `api/` : endpoints serverless
+- `migrate.sql` : crée les tables
+- `.env.example` : modèle d'env
+
+Support
+- Si vous voulez, j'exécute `git fetch`/`rebase` pour résoudre le push rejeté.
