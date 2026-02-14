@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
+</head>
+<body>
+    <div class="message">
+        <dotlottie-wc src="https://lottie.host/5b6d6d6d-6d6d-6d6d-6d6d-6d6d6d6d6d6d/animation.json" autoplay loop style="width: 300px; height: 300px;"></dotlottie-wc>
+        
+        <h1>Veux-tu être ma Valentine ?</h1>
+        
+        <div id="question">
+            <button class="answer" id="btnYes">OUI 💖</button>
+            <button class="answer" id="btnNo">Non...</button>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = localStorage.getItem('valentine_session_id');
+
+        async function sendAnswer(answer) {
+            try {
+                await fetch('/api/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId, answer })
+                });
+                
+                if (answer === 'oui') {
+                    document.querySelector('h1').innerText = "Yeeesss ! Je t'aime ! 💖";
+                    document.getElementById('question').style.display = 'none';
+                } else {
+                    alert("Tu es sûre ? 😢");
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('btnYes').addEventListener('click', () => sendAnswer('oui'));
+        
+        const noBtn = document.getElementById('btnNo');
+        noBtn.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        });
+        noBtn.addEventListener('click', () => sendAnswer('non'));
+    </script>
+</body>
+</html>
