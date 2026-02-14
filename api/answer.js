@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const { sessionId, answer } = req.body || {};
+    console.log('[API] /answer called', { sessionId, answer });
     if (!sessionId || !['oui', 'non'].includes(answer)) return res.status(400).json({ error: 'Données invalides' });
 
     await pool.query(
@@ -18,9 +19,10 @@ export default async function handler(req, res) {
       [sessionId, answer]
     );
 
+    console.log('[API] /answer success', { sessionId, answer });
     res.json({ ok: true });
   } catch (err) {
-    console.error('API /answer error', err?.message || err);
-    res.status(500).json({ error: 'DB error' });
+    console.error('[API] /answer error', err?.message || err);
+    res.status(500).json({ error: err?.message || 'DB error' });
   }
 }

@@ -37,13 +37,8 @@ const pool = new Pool({
 
 // ==================== ROUTES ====================
 
-// Page d'accueil
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../html/hello.html"));
-});
-
 // ---------- ENREGISTRER LE NOM ----------
-app.post("/name", async (req, res) => {
+app.post("/api/name", async (req, res) => {
   const { sessionId, name } = req.body;
 
   if (!sessionId || !name?.trim()) {
@@ -69,7 +64,7 @@ app.post("/name", async (req, res) => {
 });
 
 // ---------- ENREGISTRER LA RÉPONSE ----------
-app.post("/answer", async (req, res) => {
+app.post("/api/answer", async (req, res) => {
   const { sessionId, answer } = req.body;
 
   console.log(`[DEBUG] POST /answer - sessionId=${sessionId} answer=${answer}`);
@@ -99,7 +94,7 @@ app.post("/answer", async (req, res) => {
 });
 
 // ---------- VOIR TOUT ----------
-app.get("/all", async (req, res) => {
+app.get("/api/all", async (req, res) => {
   const result = await pool.query(`
     SELECT s.name, r.answer, r.updated_at
     FROM sessions s
@@ -109,15 +104,11 @@ app.get("/all", async (req, res) => {
   res.json(result.rows);
 });
 
-// ---------- FICHIERS STATIQUES ----------
-app.use(express.static(path.join(__dirname, "../")));
+// Export pour Vercel
+export default app;
 
-// ---------- 404 ----------
-app.use((req, res) => {
-  res.status(404).send("Page non trouvée");
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Serveur démarré sur le port", PORT);
-});
+// Lancer le serveur uniquement si exécuté directement (local)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Serveur local démarré sur le port ${PORT}`));
+}
