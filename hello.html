@@ -3,53 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question</title>
+    <title>Surprise</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
+    <link rel="shortcut icon" href="icon/box.svg" type="image/x-icon">
 </head>
 <body>
     <div class="message">
-        <dotlottie-wc src="https://lottie.host/5b6d6d6d-6d6d-6d6d-6d6d-6d6d6d6d6d6d/animation.json" autoplay loop style="width: 300px; height: 300px;"></dotlottie-wc>
+        <dotlottie-wc
+            src="https://lottie.host/ada07a8e-dec1-46d2-9db3-d27b816df158/y1TkGGfnXo.lottie"
+            speed="0.75"
+            autoplay
+            loop
+        ></dotlottie-wc>
         
-        <h1>Veux-tu être ma Valentine ?</h1>
+        <h1 id="greeting">VEUX TU ETRE MA VALENTINE ?</h1>
         
         <div id="question">
-            <button class="answer" id="btnYes">OUI 💖</button>
-            <button class="answer" id="btnNo">Non...</button>
+            <button class="answer" id="yes">Oui</button>
+            <button class="answer" id="no">Non</button>
         </div>
+        
+        <p>Bien sûr, je ne te force pas.</p>
     </div>
 
     <script>
         const sessionId = localStorage.getItem('valentine_session_id');
 
+        // 1. Récupérer le nom pour l'afficher
+        if (sessionId) {
+            fetch(`/api/user-data?sessionId=${sessionId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.name) {
+                        document.getElementById("greeting").innerText = `${data.name.toUpperCase()}, VEUX TU ETRE MA VALENTINE ?`;
+                    }
+                })
+                .catch(err => console.error("Erreur nom:", err));
+        }
+
         async function sendAnswer(answer) {
+            if (!sessionId) return;
             try {
                 await fetch('/api/answer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ sessionId, answer })
                 });
-                
-                if (answer === 'oui') {
-                    document.querySelector('h1').innerText = "Yeeesss ! Je t'aime ! 💖";
-                    document.getElementById('question').style.display = 'none';
-                } else {
-                    alert("Tu es sûre ? 😢");
-                }
             } catch (e) { console.error(e); }
         }
 
-        document.getElementById('btnYes').addEventListener('click', () => sendAnswer('oui'));
-        
-        const noBtn = document.getElementById('btnNo');
-        noBtn.addEventListener('mouseover', () => {
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
+        // Gestion du OUI
+        document.getElementById('yes').addEventListener('click', async () => {
+            await sendAnswer('oui');
+            document.body.innerHTML = `
+                <div class="message">
+                    <dotlottie-wc src="https://lottie.host/25eb1912-f42f-430e-ac57-30a9fd067929/JHQBgiluvG.lottie" speed="0.75" autoplay loop></dotlottie-wc>
+                    <h1>MERCI D'AVOIR ACCEPTÉ 💖</h1>
+                </div>
+            `;
         });
-        noBtn.addEventListener('click', () => sendAnswer('non'));
+        
+        // Gestion du NON (sans fuite)
+        document.getElementById('no').addEventListener('click', async () => {
+            await sendAnswer('non');
+            document.body.innerHTML = `
+                <div class="message" style="min-height:100vh; justify-content:center;">
+                    <dotlottie-wc src="https://lottie.host/0093e7b7-be68-498f-8cfd-7e651301159b/SX4DYhZRPR.lottie" autoplay loop></dotlottie-wc>
+                    <h1 style="font-size:20px; text-align:center; margin-top:12px;">J'accepte ton choix — merci d'avoir répondu</h1>
+                </div>
+            `;
+        });
     </script>
 </body>
 </html>
