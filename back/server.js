@@ -63,6 +63,23 @@ app.post("/api/name", async (req, res) => {
   }
 });
 
+// ---------- RÉCUPÉRER LES INFOS UTILISATEUR (NOUVEAU) ----------
+app.get("/api/user-data", async (req, res) => {
+  const { sessionId } = req.query;
+  if (!sessionId) return res.status(400).json({ error: "sessionId requis" });
+
+  try {
+    const result = await pool.query(
+      "SELECT name FROM sessions WHERE session_id = $1",
+      [sessionId]
+    );
+    res.json({ name: result.rows.length > 0 ? result.rows[0].name : null });
+  } catch (err) {
+    console.error("Erreur /user-data :", err.message);
+    res.status(500).json({ error: "DB error" });
+  }
+});
+
 // ---------- ENREGISTRER LA RÉPONSE ----------
 app.post("/api/answer", async (req, res) => {
   const { sessionId, answer } = req.body;
