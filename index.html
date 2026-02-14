@@ -26,56 +26,12 @@
     <label for="answer">Ton nom :</label>
     <div id="question">
       <input type="text" name="answer" id="answer" required>
-      <input type="button" class="answer" id="yes" value="Voici mon nom" onclick="submitName()">
+      <input type="button" class="answer" id="yes" value="Voici mon nom">
     </div>
   </form>
 
   </div>
-  <script>
-    const API_BASE = '/api';
 
-    function getOrCreateSessionId() {
-      let sessionId = localStorage.getItem('sessionId');
-      if (!sessionId) {
-        sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('sessionId', sessionId);
-      }
-      return sessionId;
-    }
-
-    const sessionId = getOrCreateSessionId();
-  </script>
-
-  <script>
-    // Global scope so onclick attribute can call it
-    async function submitName() {
-      const name = document.getElementById('answer').value.trim();
-      if (!name) return alert('Veuillez entrer votre nom!');
-
-      console.log('submitName clicked', { name, sessionId });
-      const btn = document.getElementById('yes');
-      if (btn) btn.disabled = true;
-
-      try {
-        const res = await fetch(`${API_BASE}/name`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, sessionId })
-        });
-        if (!res.ok) {
-          let msg = res.statusText;
-          try { const j = await res.json(); if (j?.error) msg = j.error; } catch(e){}
-          throw new Error(msg || ('HTTP ' + res.status));
-        }
-        // after saving name, go to main page
-        window.location.href = '/html/hello.html';
-      } catch (err) {
-        console.error('submitName error', err);
-        alert('Erreur lors de l'envoi. Détail: ' + (err.message || err));
-      } finally {
-        if (btn) btn.disabled = false;
-      }
-    }
-  </script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
