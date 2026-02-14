@@ -44,10 +44,17 @@
     }
 
     const sessionId = getOrCreateSessionId();
+  </script>
 
+  <script>
+    // Global scope so onclick attribute can call it
     async function submitName() {
       const name = document.getElementById('answer').value.trim();
       if (!name) return alert('Veuillez entrer votre nom!');
+
+      console.log('submitName clicked', { name, sessionId });
+      const btn = document.getElementById('yes');
+      if (btn) btn.disabled = true;
 
       try {
         const res = await fetch(`${API_BASE}/name`, {
@@ -65,6 +72,8 @@
       } catch (err) {
         console.error('submitName error', err);
         alert('Erreur lors de l'envoi. Détail: ' + (err.message || err));
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
   </script>
